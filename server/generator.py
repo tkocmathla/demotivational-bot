@@ -3,12 +3,8 @@ import gpt_2_simple as gpt2s
 from util import similar
 
 
-def generate(prefix, input_file, similarity_threshold, nsamples, length, temperature, k):
-    # load the quotes used for fine-tuning
-    with open(input_file, 'r') as f:
-        originals = f.readlines()
-        original_quotes = [originals[i].strip() for i in range(1, len(originals), 3)]
-
+# TODO generate & filter until nsamples reached
+def generate(prefix, originals, similarity_threshold, nsamples, length, temperature, top_k):
     # generate a batch of quotes
     sess = gpt2s.start_tf_sess()
     gpt2s.load_gpt2(sess)
@@ -16,7 +12,7 @@ def generate(prefix, input_file, similarity_threshold, nsamples, length, tempera
                              nsamples=nsamples,
                              length=length,
                              temperature=temperature,
-                             top_k=k,
+                             top_k=top_k,
                              prefix=prefix + '\n',
                              return_as_list=True)
 
@@ -25,7 +21,7 @@ def generate(prefix, input_file, similarity_threshold, nsamples, length, tempera
     for s in samples:
         title, body = s.split('\n')[:2]
         is_long = len(body.split(' ')) > 3
-        is_novel = all(similar(body, x) < similarity_threshold for x in original_quotes)
+        is_novel = all(similar(body, x) < similarity_threshold for x in originals)
 
         if is_long and is_novel:
             quotes.append(body)

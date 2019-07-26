@@ -12,6 +12,8 @@ jedi = "*"
 gpt-2-simple = "*"
 tensorflow = "*"
 click = "*"
+flask = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"
